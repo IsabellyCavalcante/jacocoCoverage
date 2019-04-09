@@ -96,6 +96,11 @@ public class Main2 {
 			public void visitCoverage(IClassCoverage c) {
 				String saida = "";
 
+				/*
+				 * The number of the first line coverage information is
+				 * available for. If no line is contained, the method returns
+				 * -1. (JACOCO)
+				 */
 				for (int i = c.getFirstLine(); i <= c.getLastLine(); i++) {
 					// a linha abaixo eh para pegar o status como quando vem do jacoco 
 					// 0 - javadoc e etc 

@@ -8,12 +8,3 @@ Session: br.gov.dpf.epol.unidade.pojo.isa.UsuarioTest testConstrutor2 -> executi
 Session: br.gov.dpf.epol.unidade.pojo.isa.UsuarioTest testConstrutor3 -> executionData: br/gov/dpf/epol/pojo/isa/Telefone 
 Session: br.gov.dpf.epol.unidade.pojo.isa.UsuarioTest testConstrutor3 -> executionData: br/gov/dpf/epol/unidade/pojo/isa/UsuarioTest 
 Session: br.gov.dpf.epol.unidade.pojo.isa.UsuarioTest testConstrutor3 -> executionData: br/gov/dpf/epol/pojo/isa/Usuario 
-total de classes executadas da session : 1 
-total de classes sem ser testes executadas da session : null 
-total de classes executadas da session br.gov.dpf.epol.unidade.pojo.isa.UsuarioTest testConstrutor3: 3 
-total de classes sem ser testes executadas da session br.gov.dpf.epol.unidade.pojo.isa.UsuarioTest testConstrutor3: 2 
-total de classes executadas da session br.gov.dpf.epol.unidade.pojo.isa.UsuarioTest testConstrutor2: 3 
-total de classes sem ser testes executadas da session br.gov.dpf.epol.unidade.pojo.isa.UsuarioTest testConstrutor2: 2 
-total de classes executadas da session br.gov.dpf.epol.unidade.pojo.isa.UsuarioTest testConstrutor1: 3 
-total de classes sem ser testes executadas da session br.gov.dpf.epol.unidade.pojo.isa.UsuarioTest testConstrutor1: 2 
-fim

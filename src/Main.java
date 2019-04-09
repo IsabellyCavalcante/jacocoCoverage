@@ -84,6 +84,11 @@ public class Main {
 			public void visitCoverage(IClassCoverage c) {
 				String saida = String.format("====> nomeClasse: %s \n", c.getName());
 				
+				/*
+				 * The number of the first line coverage information is
+				 * available for. If no line is contained, the method returns
+				 * -1. (JACOCO)
+				 */
 				for (int i = c.getFirstLine(); i <= c.getLastLine(); i++) {
 //					int status = c.getLine(i).getStatus();
 //					String tmp = "";

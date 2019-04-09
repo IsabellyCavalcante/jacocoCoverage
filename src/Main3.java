@@ -2,6 +2,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,12 +25,11 @@ public class Main3 {
 	private static String sessionName = "";
 	private static List<String> sessions = new ArrayList<>();
 	private static BufferedWriter bufferedWriter;
-
-	private static Map<String, Map<Integer, String>> coverageClasses = new HashMap<>();
+	
+	private static Map<String, Map<String, Map<Integer, String>>> testes = new HashMap<>();
+	private static Map<String, Map<Integer, String>> coverageClasses;
 
 	public static void main(String[] args) throws Exception {
-		// Inicializa um arquivo e ler o exec para um stream
-		bufferedWriter = new BufferedWriter(new FileWriter("execucao.txt"));
 		FileInputStream input = new FileInputStream("dados/jacoco.exec");
 
 		Map<String, ExecutionDataStore> stores = new HashMap<>();
@@ -43,26 +43,51 @@ public class Main3 {
 		reader.setExecutionDataVisitor(executionDataVisitor);
 		reader.read();
 
-		writeFile("fim", bufferedWriter);
-		bufferedWriter.close();
-
-		// começa aqui a parte de cobertura
+		// comeca aqui a parte de cobertura
 
 		ICoverageVisitor coverageVisitor = createCoverageVisitor();
 
-		bufferedWriter = new BufferedWriter(new FileWriter("coverage-v3.txt"));
-
 		for (Entry<String, ExecutionDataStore> entr : stores.entrySet()) {
+			coverageClasses = testes.getOrDefault(entr.getKey(), new HashMap<String, Map<Integer, String>>());
+			
 			Analyzer analise = new Analyzer(entr.getValue(), coverageVisitor);
 			analise.analyzeAll(".", new File("dados"));
-			// String linha = String.format("%s \n", tmp);
-			// writeFile(linha, bufferedWriter);
+			
+			testes.put(entr.getKey(), coverageClasses);
+			
 		}
+		
+		// total and additional technique
+		getOutputTotalAndAddTechnique();
 
-		bufferedWriter.close();
 		input.close();
 	}
 
+	/**
+	 * Retorna o file com a cobertura de cada teste por linha.
+	 * @throws IOException
+	 */
+	private static void getOutputTotalAndAddTechnique() throws IOException {
+		bufferedWriter = new BufferedWriter(new FileWriter("output/coverage-v4.txt"));
+		
+		for (Map<String, Map<Integer, String>> classesPerTest : testes.values()) {
+			String covTotal = "";
+			for (Map<Integer, String> lines : classesPerTest.values()) {
+				for (String cov : lines.values()) {
+					covTotal += cov;
+				}
+			}
+			covTotal += "\n";
+			writeFile(covTotal, bufferedWriter);
+		}
+		
+		bufferedWriter.close();
+	}
+
+	/**
+	 * Responsavel pela logica ao verificar cobertura das classes.
+	 * @return
+	 */
 	private static ICoverageVisitor createCoverageVisitor() {
 		ICoverageVisitor coverageVisitor = new ICoverageVisitor() {
 
@@ -72,16 +97,26 @@ public class Main3 {
 
 				Map<Integer, String> coverageLines = coverageClasses.getOrDefault(className, new HashMap<Integer, String>());
 
+				/*
+				 * The number of the first line coverage information is
+				 * available for. If no line is contained, the method returns
+				 * -1. (JACOCO)
+				 */
 				for (int i = c.getFirstLine(); i <= c.getLastLine(); i++) {
 					String coverage = getStatus(c.getLine(i).getStatus());
+					//String coverage = String.valueOf(c.getLine(i).getStatus());
 					coverageLines.put(i, coverage);
 				}
-				
 				coverageClasses.put(className, coverageLines);
-
 			}
 
-			
+			/**
+			 * Recupera a informacao de cobertura como sendo 0 (se nÃ£o cobriu -
+			 * 0 ou 1 do Jacoco) ou 1 (se cobriu - 2 ou 3 do Jacoco).
+			 * 
+			 * @param status
+			 * @return
+			 */
 			private String getStatus(int status) {
 				switch (status) {
 				case ICounter.NOT_COVERED:
@@ -97,8 +132,12 @@ public class Main3 {
 		return coverageVisitor;
 	}
 
-	// Cria o SessionInfo para o Reader. Seu visitor pega cada sessao de teste
-	// executado
+	/**
+	 * Cria o SessionInfo para o Reader. Seu visitor pega cada sessao de teste
+	 * executado.
+	 * 
+	 * @return
+	 */
 	private static ISessionInfoVisitor createSessionInfoVisitor() {
 		ISessionInfoVisitor sessionInfoVisitor = new ISessionInfoVisitor() {
 			@Override
@@ -110,8 +149,13 @@ public class Main3 {
 		return sessionInfoVisitor;
 	}
 
-	// Cria o ExecutionData para o Reader. Seu visitor popula por teste os seus
-	// respectivos Stores com classes executadas.
+	/**
+	 * Cria o ExecutionData para o Reader. Seu visitor popula por teste os seus
+	 * respectivos Stores com classes executadas.
+	 * 
+	 * @param stores
+	 * @return
+	 */
 	private static IExecutionDataVisitor createExecutionDataVisitor(Map<String, ExecutionDataStore> stores) {
 		IExecutionDataVisitor executionDataVisitor = new IExecutionDataVisitor() {
 			@Override
@@ -122,15 +166,16 @@ public class Main3 {
 				ExecutionDataStore store = stores.getOrDefault(sessionName, new ExecutionDataStore());
 				store.put(executionData);
 				stores.put(sessionName, store);
-
-				String saida = String.format("Session: %s -> executionData: %s \n", sessionName,
-						executionData.getName());
-				writeFile(saida, bufferedWriter);
 			}
 		};
 		return executionDataVisitor;
 	}
 
+	/**
+	 * Escreve o texto recebido no file configurado no buffered.
+	 * @param string 
+	 * @param bufferedWriter
+	 */
 	public static void writeFile(String string, BufferedWriter bufferedWriter) {
 		try {
 			bufferedWriter.write(string);
