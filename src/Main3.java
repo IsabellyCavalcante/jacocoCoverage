@@ -68,7 +68,7 @@ public class Main3 {
 	 * @throws IOException
 	 */
 	private static void getOutputTotalAndAddTechnique() throws IOException {
-		bufferedWriter = new BufferedWriter(new FileWriter("output/coverage-v4.txt"));
+		bufferedWriter = new BufferedWriter(new FileWriter("output/coverage-v5.txt"));
 		
 		for (Map<String, Map<Integer, String>> classesPerTest : testes.values()) {
 			String covTotal = "";
