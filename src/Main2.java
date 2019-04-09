@@ -76,6 +76,7 @@ public class Main2 {
 		ICoverageVisitor coverageVisitor = createCoverageVisitor();
 
 		bufferedWriter = new BufferedWriter(new FileWriter("coverage.txt"));
+		//TODO tirar o teste sem nada
 		for (Entry<String, ExecutionDataStore> entr : stores.entrySet()) {
 			tmp = "";
 			Analyzer analise = new Analyzer(entr.getValue(), coverageVisitor);
