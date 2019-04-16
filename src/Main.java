@@ -27,6 +27,13 @@ public class Main {
 	private static Map<String, Integer> qtdValidos = new HashMap<>();
 	private static BufferedWriter bufferedWriter;
 
+	/**
+	 * Main inicial onde eu extrai informacoes e gravei em files sem formacao especifica.
+	 * Apenas para leitura facil de alguma cobertura especifica.
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		// Inicializa um arquivo e ler o exec para um stream
 		bufferedWriter = new BufferedWriter(new FileWriter("execucao.txt"));

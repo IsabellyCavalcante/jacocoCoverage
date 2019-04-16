@@ -1,20 +1,13 @@
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterInputStream;
 
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.IClassCoverage;
@@ -28,22 +21,19 @@ import org.jacoco.core.data.ISessionInfoVisitor;
 import org.jacoco.core.data.SessionInfo;
 
 /**
- * Versao final que captura cobertura no formato das tecnicas de priorizacao.
- * Grava a informacao em um objeto que depois vai para um arquivo e depois le
- * para construir o segundo arquivo no formato necessario para cada tecnica.
+ * Versao que dava problema ao colocar em memoria o hashmap todo.
  * 
  * @author Isabelly Cavalcante
  *
  */
-public class Main3 {
+public class Main4 {
 
 	private static String sessionName = "";
 	private static List<String> sessions = new ArrayList<>();
 	private static BufferedWriter bufferedWriter;
 	
-	private static Map<String, Map<String, Map<Integer, Boolean>>> testes = new HashMap<>();
-	
-	private static Map<String, Map<Integer, Boolean>> coverageClasses;
+	private static Map<String, Map<String, Map<Integer, String>>> testes = new HashMap<>();
+	private static Map<String, Map<Integer, String>> coverageClasses;
 
 	public static void main(String[] args) throws Exception {
 		FileInputStream input = new FileInputStream("dados/jacoco.exec");
@@ -63,28 +53,18 @@ public class Main3 {
 
 		ICoverageVisitor coverageVisitor = createCoverageVisitor();
 
-		FileOutputStream fos = new FileOutputStream("arquivao.dat");
-		BufferedOutputStream bos = new BufferedOutputStream(fos);
-		DeflaterOutputStream dos = new DeflaterOutputStream(bos);
-		ObjectOutputStream oos = new ObjectOutputStream(dos);
-		oos.writeInt(stores.size());
-		
 		for (Entry<String, ExecutionDataStore> entr : stores.entrySet()) {
-			coverageClasses = testes.getOrDefault(entr.getKey(), new HashMap<String, Map<Integer, Boolean>>());
+			coverageClasses = testes.getOrDefault(entr.getKey(), new HashMap<String, Map<Integer, String>>());
 			
 			Analyzer analise = new Analyzer(entr.getValue(), coverageVisitor);
 			analise.analyzeAll(".", new File("dados"));
 			
-			oos.writeObject(entr.getKey());
-			oos.writeObject(coverageClasses);
-
-			System.out.println("SESSAO.... " + entr.getKey());
-			oos.reset();
+			testes.put(entr.getKey(), coverageClasses);
+			
 		}
 		
-		oos.close();
 		// total and additional technique
-		getOutputTotalAndAddTechniqueFromFile();
+		getOutputTotalAndAddTechnique();
 
 		input.close();
 	}
@@ -92,54 +72,23 @@ public class Main3 {
 	/**
 	 * Retorna o file com a cobertura de cada teste por linha.
 	 * @throws IOException
-	 * @throws ClassNotFoundException 
 	 */
-	private static void getOutputTotalAndAddTechniqueFromFile() throws IOException, ClassNotFoundException {
+	private static void getOutputTotalAndAddTechnique() throws IOException {
 		bufferedWriter = new BufferedWriter(new FileWriter("output/coverage-v5.txt"));
-
-		FileInputStream fis = new FileInputStream("arquivao.dat");
-		BufferedInputStream bis = new BufferedInputStream(fis);
-		InflaterInputStream iis = new InflaterInputStream(bis);
-		ObjectInputStream ois = new ObjectInputStream(iis);
 		
-		int contagem = ois.readInt();
-		
-		for (int i = 0; i < contagem; i++) {
-			String entry = (String) ois.readObject();
-			Map<String, Map<Integer, Boolean>> classesPerTest = (Map<String, Map<Integer, Boolean>>) ois.readObject();
-			StringBuilder sb = new StringBuilder();
-			for (Map<Integer, Boolean> lines : classesPerTest.values()) {
-				for (Boolean cov : lines.values()) {
-					sb.append(cov ? "1" : "0");
+		for (Map<String, Map<Integer, String>> classesPerTest : testes.values()) {
+			String covTotal = "";
+			for (Map<Integer, String> lines : classesPerTest.values()) {
+				for (String cov : lines.values()) {
+					covTotal += cov;
 				}
 			}
-			sb.append("\n");
-			writeFile(sb.toString(), bufferedWriter);
+			covTotal += "\n";
+			writeFile(covTotal, bufferedWriter);
 		}
 		
 		bufferedWriter.close();
 	}
-	
-//	/**
-//	 * Retorna o file com a cobertura de cada teste por linha.
-//	 * @throws IOException
-//	 */
-//	private static void getOutputTotalAndAddTechnique() throws IOException {
-//		bufferedWriter = new BufferedWriter(new FileWriter("output/coverage-v5.txt"));
-//		
-//		for (Map<String, Map<Integer, Boolean>> classesPerTest : testes.values()) {
-//			String covTotal = "";
-//			for (Map<Integer, Boolean> lines : classesPerTest.values()) {
-//				for (Boolean cov : lines.values()) {
-//					covTotal += (cov ? "1" : "0");
-//				}
-//			}
-//			covTotal += "\n";
-//			writeFile(covTotal, bufferedWriter);
-//		}
-//		
-//		bufferedWriter.close();
-//	}
 
 	/**
 	 * Responsavel pela logica ao verificar cobertura das classes.
@@ -152,7 +101,7 @@ public class Main3 {
 			public void visitCoverage(IClassCoverage c) {
 				String className = c.getName();
 
-				Map<Integer, Boolean> coverageLines = coverageClasses.getOrDefault(className, new HashMap<Integer, Boolean>());
+				Map<Integer, String> coverageLines = coverageClasses.getOrDefault(className, new HashMap<Integer, String>());
 
 				/*
 				 * The number of the first line coverage information is
@@ -162,7 +111,7 @@ public class Main3 {
 				for (int i = c.getFirstLine(); i <= c.getLastLine(); i++) {
 					String coverage = getStatus(c.getLine(i).getStatus());
 					//String coverage = String.valueOf(c.getLine(i).getStatus());
-					coverageLines.put(i, coverage.equals("1"));
+					coverageLines.put(i, coverage);
 				}
 				coverageClasses.put(className, coverageLines);
 			}
