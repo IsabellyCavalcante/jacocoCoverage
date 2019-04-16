@@ -1,4 +1,0 @@
- 
-br.gov.dpf.epol.unidade.pojo.isa.UsuarioTest testConstrutor3 
-br.gov.dpf.epol.unidade.pojo.isa.UsuarioTest testConstrutor2 
-br.gov.dpf.epol.unidade.pojo.isa.UsuarioTest testConstrutor1 
