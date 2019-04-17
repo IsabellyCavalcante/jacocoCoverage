@@ -1,5 +1,7 @@
 dados/
 bin/
+output/
 .settings/
 .project
 .classpath
+arquivao.dat

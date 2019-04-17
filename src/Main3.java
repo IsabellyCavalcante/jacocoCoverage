@@ -50,10 +50,12 @@ public class Main3 {
 
 		Map<String, ExecutionDataStore> stores = new HashMap<>();
 
+		System.out.println("iniciando...");
 		// Cria o sessionInfo e executionData para o READER do jacoco
 		ISessionInfoVisitor sessionInfoVisitor = createSessionInfoVisitor();
 		IExecutionDataVisitor executionDataVisitor = createExecutionDataVisitor(stores);
 
+		System.out.println("iniciando 1.5...");
 		ExecutionDataReader reader = new ExecutionDataReader(input);
 		reader.setSessionInfoVisitor(sessionInfoVisitor);
 		reader.setExecutionDataVisitor(executionDataVisitor);
@@ -61,6 +63,7 @@ public class Main3 {
 
 		// comeca aqui a parte de cobertura
 
+		System.out.println("iniciando 2...");
 		ICoverageVisitor coverageVisitor = createCoverageVisitor();
 
 		FileOutputStream fos = new FileOutputStream("arquivao.dat");
@@ -69,6 +72,7 @@ public class Main3 {
 		ObjectOutputStream oos = new ObjectOutputStream(dos);
 		oos.writeInt(stores.size());
 		
+		System.out.println("iniciando 3...");
 		for (Entry<String, ExecutionDataStore> entr : stores.entrySet()) {
 			coverageClasses = testes.getOrDefault(entr.getKey(), new HashMap<String, Map<Integer, Boolean>>());
 			
