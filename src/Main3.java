@@ -96,11 +96,12 @@ public class Main3 {
 	 * @throws IOException
 	 * @throws ClassNotFoundException 
 	 */
-	private static void getOutputTotalAndAddTechniqueFromFile() throws IOException, ClassNotFoundException {
+	public static void getOutputTotalAndAddTechniqueFromFile() throws IOException, ClassNotFoundException {
+		System.out.println("iniciando gravacao no file txt");
 		BufferedWriter bwCoverage = new BufferedWriter(new FileWriter("output/coverage-v5.txt"));
 		BufferedWriter bwTests = new BufferedWriter(new FileWriter("output/tests.txt"));
 
-		FileInputStream fis = new FileInputStream("arquivao.dat");
+		FileInputStream fis = new FileInputStream("arquivao-v1.dat");
 		BufferedInputStream bis = new BufferedInputStream(fis);
 		InflaterInputStream iis = new InflaterInputStream(bis);
 		ObjectInputStream ois = new ObjectInputStream(iis);
@@ -128,6 +129,7 @@ public class Main3 {
 		
 		bwCoverage.close();
 		bwTests.close();
+		System.out.println("final gravacao no file txt");
 	}
 
 	/**
