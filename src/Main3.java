@@ -39,9 +39,9 @@ public class Main3 {
 
 	private static String sessionName = "";
 	private static List<String> sessions = new ArrayList<>();
-	
+
 	private static Map<String, Map<String, Map<Integer, Boolean>>> testes = new HashMap<>();
-	
+
 	private static Map<String, Map<Integer, Boolean>> coverageClasses;
 
 	public static void main(String[] args) throws Exception {
@@ -68,33 +68,77 @@ public class Main3 {
 		DeflaterOutputStream dos = new DeflaterOutputStream(bos);
 		ObjectOutputStream oos = new ObjectOutputStream(dos);
 		oos.writeInt(stores.size());
-		
+
 		System.out.println("----- iniciando leitura de cobertura das classes -----");
 		for (Entry<String, ExecutionDataStore> entr : stores.entrySet()) {
 			coverageClasses = testes.getOrDefault(entr.getKey(), new HashMap<String, Map<Integer, Boolean>>());
-			
+
 			Analyzer analise = new Analyzer(entr.getValue(), coverageVisitor);
 			analise.analyzeAll(".", new File("dados"));
-			
+
 			oos.writeObject(entr.getKey());
 			oos.writeObject(coverageClasses);
 
 			System.out.println("SESSAO.... " + entr.getKey());
 			oos.reset();
 		}
-		
+
 		oos.close();
-		
+
 		// total and additional technique
 		getOutputTotalAndAddTechniqueFromFile();
 
 		input.close();
 	}
 
+	public static void getOutputTotalAndAddEchalonTechniqueFromFile() throws Exception {
+		System.out.println("iniciando gravacao no file txt da echalon");
+		BufferedWriter bwCoverage = new BufferedWriter(new FileWriter("output/coverage-v6.txt"));
+		BufferedWriter bwTests = new BufferedWriter(new FileWriter("output/tests.txt"));
+
+		FileInputStream fis = new FileInputStream("arquivao.dat");
+		BufferedInputStream bis = new BufferedInputStream(fis);
+		InflaterInputStream iis = new InflaterInputStream(bis);
+		ObjectInputStream ois = new ObjectInputStream(iis);
+
+		int contagem = ois.readInt();
+
+		for (int i = 0; i < contagem; i++) {
+			StringBuilder entry = new StringBuilder();
+			entry.append((String) ois.readObject());
+
+			StringBuilder output = new StringBuilder();
+			Map<String, Map<Integer, Boolean>> classesPerTest = (Map<String, Map<Integer, Boolean>>) ois.readObject();
+
+			for (String className : classesPerTest.keySet()) {
+				Map<Integer, Boolean> classCoverage = classesPerTest.get(className);
+				for (Integer line : classCoverage.keySet()) {
+					Boolean cov = classCoverage.get(line);
+					if (cov) {
+						output.append(className);
+						output.append(".");
+						output.append(line);
+						output.append(",");
+					}
+				}
+			}
+
+			output.append("\n");
+			entry.append("\n");
+			writeFile(entry.toString(), bwTests);
+			writeFile(output.toString(), bwCoverage);
+		}
+
+		bwCoverage.close();
+		bwTests.close();
+		System.out.println("final gravacao no file txt");
+	}
+
 	/**
 	 * Retorna o file com a cobertura de cada teste por linha.
+	 * 
 	 * @throws IOException
-	 * @throws ClassNotFoundException 
+	 * @throws ClassNotFoundException
 	 */
 	public static void getOutputTotalAndAddTechniqueFromFile() throws IOException, ClassNotFoundException {
 		System.out.println("iniciando gravacao no file txt");
@@ -105,28 +149,28 @@ public class Main3 {
 		BufferedInputStream bis = new BufferedInputStream(fis);
 		InflaterInputStream iis = new InflaterInputStream(bis);
 		ObjectInputStream ois = new ObjectInputStream(iis);
-		
+
 		int contagem = ois.readInt();
-		
+
 		for (int i = 0; i < contagem; i++) {
 			StringBuilder entry = new StringBuilder();
 			entry.append((String) ois.readObject());
-			
+
 			Map<String, Map<Integer, Boolean>> classesPerTest = (Map<String, Map<Integer, Boolean>>) ois.readObject();
 			StringBuilder sb = new StringBuilder();
-			
+
 			for (Map<Integer, Boolean> lines : classesPerTest.values()) {
 				for (Boolean cov : lines.values()) {
 					sb.append(cov ? "1" : "0");
 				}
 			}
-			
+
 			sb.append("\n");
 			entry.append("\n");
 			writeFile(entry.toString(), bwTests);
 			writeFile(sb.toString(), bwCoverage);
 		}
-		
+
 		bwCoverage.close();
 		bwTests.close();
 		System.out.println("final gravacao no file txt");
@@ -134,6 +178,7 @@ public class Main3 {
 
 	/**
 	 * Responsavel pela logica ao verificar cobertura das classes.
+	 * 
 	 * @return
 	 */
 	private static ICoverageVisitor createCoverageVisitor() {
@@ -143,24 +188,24 @@ public class Main3 {
 			public void visitCoverage(IClassCoverage c) {
 				String className = c.getName();
 
-				Map<Integer, Boolean> coverageLines = coverageClasses.getOrDefault(className, new HashMap<Integer, Boolean>());
+				Map<Integer, Boolean> coverageLines = coverageClasses.getOrDefault(className,
+						new HashMap<Integer, Boolean>());
 
 				/*
-				 * The number of the first line coverage information is
-				 * available for. If no line is contained, the method returns
-				 * -1. (JACOCO)
+				 * The number of the first line coverage information is available for. If no
+				 * line is contained, the method returns -1. (JACOCO)
 				 */
 				for (int i = c.getFirstLine(); i <= c.getLastLine(); i++) {
 					String coverage = getStatus(c.getLine(i).getStatus());
-					//String coverage = String.valueOf(c.getLine(i).getStatus());
+					// String coverage = String.valueOf(c.getLine(i).getStatus());
 					coverageLines.put(i, coverage.equals("1"));
 				}
 				coverageClasses.put(className, coverageLines);
 			}
 
 			/**
-			 * Recupera a informacao de cobertura como sendo 0 (se não cobriu -
-			 * 0 ou 1 do Jacoco) ou 1 (se cobriu - 2 ou 3 do Jacoco).
+			 * Recupera a informacao de cobertura como sendo 0 (se não cobriu - 0 ou 1 do
+			 * Jacoco) ou 1 (se cobriu - 2 ou 3 do Jacoco).
 			 * 
 			 * @param status
 			 * @return
@@ -221,7 +266,8 @@ public class Main3 {
 
 	/**
 	 * Escreve o texto recebido no file configurado no buffered.
-	 * @param string 
+	 * 
+	 * @param string
 	 * @param bufferedWriter
 	 */
 	public static void writeFile(String string, BufferedWriter bufferedWriter) {
