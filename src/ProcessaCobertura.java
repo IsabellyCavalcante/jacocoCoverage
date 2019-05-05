@@ -35,16 +35,21 @@ import org.jacoco.core.data.SessionInfo;
  * @author Isabelly Cavalcante
  *
  */
-public class Main3 {
+public class ProcessaCobertura {
 
 	private static String sessionName = "";
 	private static List<String> sessions = new ArrayList<>();
 
 	private static Map<String, Map<String, Map<Integer, Boolean>>> testes = new HashMap<>();
-
 	private static Map<String, Map<Integer, Boolean>> coverageClasses;
 
-	public static void main(String[] args) throws Exception {
+	/**
+	 * Carrega as informacoes do Jacoco.exec e grava tudo em um arquivo.dat que
+	 * contem a versao com os objetos.
+	 * 
+	 * @throws Exception
+	 */
+	public static void getCoverageFromJacoco() throws Exception {
 		FileInputStream input = new FileInputStream("dados/jacoco.exec");
 
 		Map<String, ExecutionDataStore> stores = new HashMap<>();
@@ -79,21 +84,24 @@ public class Main3 {
 			oos.writeObject(entr.getKey());
 			oos.writeObject(coverageClasses);
 
-			System.out.println("SESSAO.... " + entr.getKey());
 			oos.reset();
 		}
 
 		oos.close();
-
-		// total and additional technique
-		getOutputTotalAndAddTechniqueFromFile();
-
 		input.close();
+		System.out.println("----- leitura de cobertura das classes do jacoco finalizada -----");
 	}
 
+	/**
+	 * Retorna o file com a cobertura de cada teste por linha (utilizada paras as
+	 * tecnicas Echalon total e additional).
+	 * 
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	public static void getOutputTotalAndAddEchalonTechniqueFromFile() throws Exception {
 		System.out.println("iniciando gravacao no file txt da echalon");
-		BufferedWriter bwCoverage = new BufferedWriter(new FileWriter("output/coverage-v6.txt"));
+		BufferedWriter bwCoverage = new BufferedWriter(new FileWriter("output/coverage-v2.txt"));
 		BufferedWriter bwTests = new BufferedWriter(new FileWriter("output/tests.txt"));
 
 		FileInputStream fis = new FileInputStream("arquivao.dat");
@@ -104,29 +112,30 @@ public class Main3 {
 		int contagem = ois.readInt();
 
 		for (int i = 0; i < contagem; i++) {
-			StringBuilder entry = new StringBuilder();
-			entry.append((String) ois.readObject());
+			StringBuilder testName = new StringBuilder();
+			testName.append((String) ois.readObject());
 
-			StringBuilder output = new StringBuilder();
+			StringBuilder classesCoverage = new StringBuilder();
 			Map<String, Map<Integer, Boolean>> classesPerTest = (Map<String, Map<Integer, Boolean>>) ois.readObject();
 
 			for (String className : classesPerTest.keySet()) {
 				Map<Integer, Boolean> classCoverage = classesPerTest.get(className);
+
 				for (Integer line : classCoverage.keySet()) {
 					Boolean cov = classCoverage.get(line);
 					if (cov) {
-						output.append(className);
-						output.append(".");
-						output.append(line);
-						output.append(",");
+						classesCoverage.append(className);
+						classesCoverage.append(".");
+						classesCoverage.append(line);
+						classesCoverage.append(",");
 					}
 				}
 			}
 
-			output.append("\n");
-			entry.append("\n");
-			writeFile(entry.toString(), bwTests);
-			writeFile(output.toString(), bwCoverage);
+			classesCoverage.append("\n");
+			testName.append("\n");
+			writeFile(testName.toString(), bwTests);
+			writeFile(classesCoverage.toString(), bwCoverage);
 		}
 
 		bwCoverage.close();
@@ -135,7 +144,8 @@ public class Main3 {
 	}
 
 	/**
-	 * Retorna o file com a cobertura de cada teste por linha.
+	 * Retorna o file com a cobertura de cada teste por linha (utilizada paras as
+	 * tecnicas Greedy total e additional).
 	 * 
 	 * @throws IOException
 	 * @throws ClassNotFoundException
@@ -196,9 +206,9 @@ public class Main3 {
 				 * line is contained, the method returns -1. (JACOCO)
 				 */
 				for (int i = c.getFirstLine(); i <= c.getLastLine(); i++) {
-					String coverage = getStatus(c.getLine(i).getStatus());
-					// String coverage = String.valueOf(c.getLine(i).getStatus());
-					coverageLines.put(i, coverage.equals("1"));
+						String coverage = getStatus(c.getLine(i).getStatus());
+						coverageLines.put(i, coverage.equals("1"));
+
 				}
 				coverageClasses.put(className, coverageLines);
 			}
@@ -270,7 +280,7 @@ public class Main3 {
 	 * @param string
 	 * @param bufferedWriter
 	 */
-	public static void writeFile(String string, BufferedWriter bufferedWriter) {
+	private static void writeFile(String string, BufferedWriter bufferedWriter) {
 		try {
 			bufferedWriter.write(string);
 		} catch (Exception e) {
