@@ -101,8 +101,8 @@ public class ProcessaCobertura {
 	 */
 	public static void getOutputTotalAndAddEchalonTechniqueFromFile() throws Exception {
 		System.out.println("iniciando gravacao no file txt da echalon");
-		BufferedWriter bwCoverage = new BufferedWriter(new FileWriter("output/coverage-v2.txt"));
-		BufferedWriter bwTests = new BufferedWriter(new FileWriter("output/tests.txt"));
+		BufferedWriter bwCoverage = new BufferedWriter(new FileWriter("output/coverage-vE.txt"));
+		BufferedWriter bwTests = new BufferedWriter(new FileWriter("output/tests-vE.txt"));
 
 		FileInputStream fis = new FileInputStream("arquivao.dat");
 		BufferedInputStream bis = new BufferedInputStream(fis);
@@ -152,10 +152,10 @@ public class ProcessaCobertura {
 	 */
 	public static void getOutputTotalAndAddTechniqueFromFile() throws IOException, ClassNotFoundException {
 		System.out.println("iniciando gravacao no file txt");
-		BufferedWriter bwCoverage = new BufferedWriter(new FileWriter("output/coverage-v5.txt"));
-		BufferedWriter bwTests = new BufferedWriter(new FileWriter("output/tests.txt"));
+		BufferedWriter bwCoverage = new BufferedWriter(new FileWriter("output/coverage-vG.txt"));
+		BufferedWriter bwTests = new BufferedWriter(new FileWriter("output/tests-vG.txt"));
 
-		FileInputStream fis = new FileInputStream("arquivao-v1.dat");
+		FileInputStream fis = new FileInputStream("arquivao.dat");
 		BufferedInputStream bis = new BufferedInputStream(fis);
 		InflaterInputStream iis = new InflaterInputStream(bis);
 		ObjectInputStream ois = new ObjectInputStream(iis);

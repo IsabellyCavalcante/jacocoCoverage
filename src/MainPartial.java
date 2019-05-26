@@ -3,9 +3,9 @@ public class MainPartial {
 	public static void main(String[] args) {
 		
 		try {
-			//ProcessaCobertura.teste();
-			//ProcessaCobertura.getCoverageFromJacoco();
-			ProcessaCobertura.getOutputTotalAndAddEchalonTechniqueFromFile();
+//			ProcessaCobertura.getCoverageFromJacoco();
+//			ProcessaCobertura.getOutputTotalAndAddEchalonTechniqueFromFile();
+//			ProcessaCobertura.getOutputTotalAndAddTechniqueFromFile();
 			
 		} catch (Exception ex) {
 			System.err.println("erro capturado");
