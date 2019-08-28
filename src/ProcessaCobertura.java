@@ -49,7 +49,7 @@ public class ProcessaCobertura {
 	 * 
 	 * @throws Exception
 	 */
-	public static void getCoverageFromJacoco() throws Exception {
+	public static void getCoverageFromJacoco(String arquivaoName) throws Exception {
 		FileInputStream input = new FileInputStream("dados/jacoco.exec");
 
 		Map<String, ExecutionDataStore> stores = new HashMap<>();
@@ -68,7 +68,7 @@ public class ProcessaCobertura {
 
 		ICoverageVisitor coverageVisitor = createCoverageVisitor();
 
-		FileOutputStream fos = new FileOutputStream("arquivao.dat");
+		FileOutputStream fos = new FileOutputStream(arquivaoName);
 		BufferedOutputStream bos = new BufferedOutputStream(fos);
 		DeflaterOutputStream dos = new DeflaterOutputStream(bos);
 		ObjectOutputStream oos = new ObjectOutputStream(dos);
