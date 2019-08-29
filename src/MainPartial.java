@@ -6,7 +6,7 @@ public class MainPartial {
 			String metodo = args[0];
 			String post = args[1];
 			
-			String arquivao = String.format("arquivao_%s.dat", post);
+			String arquivao = String.format("../output/arquivao_%s.dat", post);
 			
 			switch (metodo) {
 			case "getCoverage":
@@ -23,8 +23,8 @@ public class MainPartial {
 
 			}
 		} catch (Exception ex) {
-			System.err.println("erro capturado");
 			System.out.println();
+			System.err.println("Algo deu errado. Erro capturado:");
 			System.out.println(ex.getMessage());
 		}
 	}

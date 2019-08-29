@@ -74,7 +74,7 @@ public class ProcessaCobertura {
 		ObjectOutputStream oos = new ObjectOutputStream(dos);
 		oos.writeInt(stores.size());
 
-		System.out.println("----- leitura do jacoco.exec finalizada -----");
+		System.out.println("----- final da leitura do jacoco.exec -----");
 		System.out.println("----- iniciando leitura de cobertura das classes -----");
 		for (Entry<String, ExecutionDataStore> entr : stores.entrySet()) {
 			coverageClasses = testes.getOrDefault(entr.getKey(), new HashMap<String, Map<Integer, Boolean>>());
@@ -90,7 +90,7 @@ public class ProcessaCobertura {
 
 		oos.close();
 		input.close();
-		System.out.println("----- leitura de cobertura das classes finalizada -----");
+		System.out.println("----- final da leitura de cobertura das classes -----");
 	}
 
 	/**
@@ -103,10 +103,10 @@ public class ProcessaCobertura {
 	public static void getOutputTotalAndAddEchalonTechniqueFromFile(String arquivaoName, String post)
 			throws IOException, ClassNotFoundException {
 
-		System.out.println("----- iniciando gravacao no file txt da echalon -----");
+		System.out.println("----- iniciando gravacao no file txt da echelon -----");
 
-		String bwCoverageFile = String.format("output/coverage-vE-%s.txt", post);
-		String bwTestsFile = String.format("output/tests-vE-%s.txt", post);
+		String bwCoverageFile = String.format("../output/coverage-vE-%s.txt", post);
+		String bwTestsFile = String.format("../output/tests-vE-%s.txt", post);
 		BufferedWriter bwCoverage = new BufferedWriter(new FileWriter(bwCoverageFile));
 		BufferedWriter bwTests = new BufferedWriter(new FileWriter(bwTestsFile));
 
@@ -161,8 +161,8 @@ public class ProcessaCobertura {
 
 		System.out.println("----- iniciando gravacao no file txt da greedy -----");
 
-		String bwCoverageFile = String.format("output/coverage-vG-%s.txt", post);
-		String bwTestsFile = String.format("output/tests-vG-%s.txt", post);
+		String bwCoverageFile = String.format("../output/coverage-vG-%s.txt", post);
+		String bwTestsFile = String.format("../output/tests-vG-%s.txt", post);
 		BufferedWriter bwCoverage = new BufferedWriter(new FileWriter(bwCoverageFile));
 		BufferedWriter bwTests = new BufferedWriter(new FileWriter(bwTestsFile));
 
