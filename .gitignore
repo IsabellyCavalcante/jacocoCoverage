@@ -1,5 +1,6 @@
 dados/
 bin/
+src/*.class
 output/
 .settings/
 .project
