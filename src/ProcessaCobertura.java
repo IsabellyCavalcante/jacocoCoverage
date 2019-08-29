@@ -99,12 +99,17 @@ public class ProcessaCobertura {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public static void getOutputTotalAndAddEchalonTechniqueFromFile() throws Exception {
-		System.out.println("iniciando gravacao no file txt da echalon");
-		BufferedWriter bwCoverage = new BufferedWriter(new FileWriter("output/coverage-vE.txt"));
-		BufferedWriter bwTests = new BufferedWriter(new FileWriter("output/tests-vE.txt"));
+	public static void getOutputTotalAndAddEchalonTechniqueFromFile(String arquivaoName, String post)
+			throws IOException, ClassNotFoundException {
 
-		FileInputStream fis = new FileInputStream("arquivao.dat");
+		System.out.println("iniciando gravacao no file txt da echalon");
+
+		String bwCoverageFile = String.format("output/coverage-vE-%s.txt", post);
+		String bwTestsFile = String.format("output/tests-vE-%s.txt", post);
+		BufferedWriter bwCoverage = new BufferedWriter(new FileWriter(bwCoverageFile));
+		BufferedWriter bwTests = new BufferedWriter(new FileWriter(bwTestsFile));
+
+		FileInputStream fis = new FileInputStream(arquivaoName);
 		BufferedInputStream bis = new BufferedInputStream(fis);
 		InflaterInputStream iis = new InflaterInputStream(bis);
 		ObjectInputStream ois = new ObjectInputStream(iis);
@@ -150,12 +155,19 @@ public class ProcessaCobertura {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public static void getOutputTotalAndAddTechniqueFromFile() throws IOException, ClassNotFoundException {
-		System.out.println("iniciando gravacao no file txt");
-		BufferedWriter bwCoverage = new BufferedWriter(new FileWriter("output/coverage-vG.txt"));
-		BufferedWriter bwTests = new BufferedWriter(new FileWriter("output/tests-vG.txt"));
+	public static void getOutputTotalAndAddTechniqueFromFile(String arquivaoName, String post)
+			throws IOException, ClassNotFoundException {
 
-		FileInputStream fis = new FileInputStream("arquivao.dat");
+		System.out.println("iniciando gravacao no file txt");
+
+		String bwCoverageFile = String.format("output/coverage-vG-%s.txt", post);
+		String bwTestsFile = String.format("output/tests-vG-%s.txt", post);
+		System.out.println(bwCoverageFile);
+		System.out.println(bwTestsFile);
+		BufferedWriter bwCoverage = new BufferedWriter(new FileWriter(bwCoverageFile));
+		BufferedWriter bwTests = new BufferedWriter(new FileWriter(bwTestsFile));
+
+		FileInputStream fis = new FileInputStream(arquivaoName);
 		BufferedInputStream bis = new BufferedInputStream(fis);
 		InflaterInputStream iis = new InflaterInputStream(bis);
 		ObjectInputStream ois = new ObjectInputStream(iis);
@@ -206,8 +218,8 @@ public class ProcessaCobertura {
 				 * line is contained, the method returns -1. (JACOCO)
 				 */
 				for (int i = c.getFirstLine(); i <= c.getLastLine(); i++) {
-						String coverage = getStatus(c.getLine(i).getStatus());
-						coverageLines.put(i, coverage.equals("1"));
+					String coverage = getStatus(c.getLine(i).getStatus());
+					coverageLines.put(i, coverage.equals("1"));
 
 				}
 				coverageClasses.put(className, coverageLines);

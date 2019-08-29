@@ -10,19 +10,15 @@ public class MainPartial {
 			
 			switch (metodo) {
 			case "getCoverage":
-				System.out.println("1");
-//				ProcessaCobertura.getCoverageFromJacoco(arquivao);
+				ProcessaCobertura.getCoverageFromJacoco(arquivao);
 				break;
 				
 			case "Greedy":
-				System.out.println("2");
-				System.out.println(post);
-//				ProcessaCobertura.getOutputTotalAndAddTechniqueFromFile();
+				ProcessaCobertura.getOutputTotalAndAddTechniqueFromFile(arquivao, post);
 				break;
 
 			case "Echalon":
-				System.out.println("3");
-//				ProcessaCobertura.getOutputTotalAndAddEchalonTechniqueFromFile();
+				ProcessaCobertura.getOutputTotalAndAddEchalonTechniqueFromFile(arquivao, post);
 				break;
 
 			}
